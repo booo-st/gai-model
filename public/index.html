@@ -671,11 +671,22 @@
   }
 
   function clearHistory() {
-    if (!confirm('히스토리를 모두 삭제할까요?\n(서버 파일은 삭제되지 않습니다)')) return;
+    const hasLoading = !!document.querySelector('.card-image.loading');
+    const msg = hasLoading
+      ? '생성 중인 이미지는 유지하고\n나머지 히스토리를 모두 삭제할까요?'
+      : '히스토리를 모두 삭제할까요?\n(서버 파일은 삭제되지 않습니다)';
+    if (!confirm(msg)) return;
+
     localStorage.removeItem(HISTORY_KEY);
+    generatedImages = [];
+
+    // 로딩 중인 카드를 제외하고 모두 제거
+    document.querySelectorAll('.result-card').forEach(card => {
+      if (!card.querySelector('.card-image.loading')) card.remove();
+    });
+
     document.getElementById('clearHistoryBtn').style.display = 'none';
-    // 히스토리 카드만 제거 (현재 세션 카드는 유지)
-    document.querySelectorAll('.result-card.is-history').forEach(c => c.remove());
+
     if (!document.querySelector('.result-card')) {
       document.getElementById('resultsGrid').innerHTML = `
         <div class="empty-state">

@@ -144,32 +144,51 @@ function getMimeType(filePath) {
   return 'image/jpeg';
 }
 
-// 단일 활용컷 생성 (nano-banana와 동일한 Gemini 2.5 Flash Image API 직접 호출)
+// 단일 활용컷 생성 — 500 에러 시 최대 2회 재시도
 async function generateShot(genAI, imagePath, shot, outputPath) {
   const imageBuffer = fs.readFileSync(imagePath);
   const imageBase64 = imageBuffer.toString('base64');
   const mimeType = getMimeType(imagePath);
 
-  const response = await genAI.models.generateContent({
-    model: 'gemini-3.1-flash-image-preview',
-    contents: [
-      { text: shot.prompt + '\n\nEXPRESSION: subtle natural smile, soft and relaxed, not forced or exaggerated. The mouth should be gently closed or very slightly open with a warm, natural smile.' },
-      { inlineData: { data: imageBase64, mimeType } },
-    ],
-  });
+  const fullPrompt = shot.prompt +
+    '\n\nEXPRESSION: subtle natural smile, soft and relaxed, not forced or exaggerated. The mouth should be gently closed or very slightly open with a warm, natural smile.';
 
-  // 응답에서 이미지 데이터 추출
-  const parts = response.candidates?.[0]?.content?.parts ?? [];
-  for (const part of parts) {
-    if (part.inlineData?.data) {
-      const buf = Buffer.from(part.inlineData.data, 'base64');
-      fs.writeFileSync(outputPath, buf);
-      return;
+  const MAX_RETRIES = 2;
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await genAI.models.generateContent({
+        model: 'gemini-3.1-flash-image-preview',
+        contents: [
+          { text: fullPrompt },
+          { inlineData: { data: imageBase64, mimeType } },
+        ],
+      });
+
+      const parts = response.candidates?.[0]?.content?.parts ?? [];
+      for (const part of parts) {
+        if (part.inlineData?.data) {
+          const buf = Buffer.from(part.inlineData.data, 'base64');
+          fs.writeFileSync(outputPath, buf);
+          return;
+        }
+      }
+
+      const textParts = parts.filter((p) => p.text).map((p) => p.text).join(' ');
+      throw new Error(`이미지가 생성되지 않았습니다. 응답: ${textParts.slice(0, 200)}`);
+    } catch (err) {
+      lastError = err;
+      const is500 = err.message?.includes('"code":500') || err.message?.includes('Internal error');
+      if (is500 && attempt < MAX_RETRIES) {
+        console.log(`[${shot.name}] 500 에러, ${attempt}회 재시도 중...`);
+        await new Promise(r => setTimeout(r, 3000 * attempt)); // 3초, 6초 대기
+        continue;
+      }
+      throw err;
     }
   }
-
-  const textParts = parts.filter((p) => p.text).map((p) => p.text).join(' ');
-  throw new Error(`이미지가 생성되지 않았습니다. 응답: ${textParts.slice(0, 200)}`);
+  throw lastError;
 }
 
 // API: 활용컷 목록
@@ -202,7 +221,11 @@ app.post('/api/generate', async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+  // 클라이언트 연결 끊기면 루프 중단 (새로고침/탭 닫기)
+  let aborted = false;
+  res.on('close', () => { aborted = true; });
+
+  const send = (data) => { if (!aborted) res.write(`data: ${JSON.stringify(data)}\n\n`); };
 
   try {
     const genAI = new GoogleGenAI({ apiKey });
@@ -214,6 +237,8 @@ app.post('/api/generate', async (req, res) => {
     send({ type: 'status', message: `${shots.length}개 활용컷 생성 시작...` });
 
     for (const shot of shots) {
+      if (aborted) break;  // 연결 끊기면 즉시 중단
+
       send({ type: 'progress', shotId: shot.id, name: shot.name, emoji: shot.emoji });
 
       try {
@@ -221,6 +246,8 @@ app.post('/api/generate', async (req, res) => {
         const outputPath = path.join(generatedDir, outputFilename);
 
         await generateShot(genAI, imagePath, shot, outputPath);
+
+        if (aborted) break;  // 생성 완료됐지만 이미 연결 끊김 → 루프 종료
 
         send({
           type: 'done',
