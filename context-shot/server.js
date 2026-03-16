@@ -202,17 +202,19 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   res.json({ filename: req.file.filename, url: `/uploads/${req.file.filename}` });
 });
 
-// API: 활용컷 생성 (SSE 스트리밍)
+// API: 활용컷 생성 (SSE 스트리밍) — 다중 인물 지원
 app.post('/api/generate', async (req, res) => {
-  const { filename, apiKey, selectedShots } = req.body;
+  const { filenames, apiKey, selectedShots } = req.body;
 
-  if (!filename || !apiKey) {
-    return res.status(400).json({ error: 'filename과 apiKey가 필요합니다.' });
+  if (!filenames?.length || !apiKey) {
+    return res.status(400).json({ error: 'filenames와 apiKey가 필요합니다.' });
   }
 
-  const imagePath = path.join(uploadsDir, filename);
-  if (!fs.existsSync(imagePath)) {
-    return res.status(404).json({ error: '업로드된 이미지를 찾을 수 없습니다.' });
+  // 모든 파일 존재 확인
+  for (const filename of filenames) {
+    if (!fs.existsSync(path.join(uploadsDir, filename))) {
+      return res.status(404).json({ error: `파일을 찾을 수 없습니다: ${filename}` });
+    }
   }
 
   // Server-Sent Events 설정
@@ -221,11 +223,19 @@ app.post('/api/generate', async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  // 클라이언트 연결 끊기면 루프 중단 (새로고침/탭 닫기)
   let aborted = false;
   res.on('close', () => { aborted = true; });
 
-  const send = (data) => { if (!aborted) res.write(`data: ${JSON.stringify(data)}\n\n`); };
+  const send = (data) => {
+    if (aborted) return;
+    try { res.write(`data: ${JSON.stringify(data)}\n\n`); } catch { aborted = true; }
+  };
+
+  // 생성 중 연결이 끊기지 않도록 15초마다 heartbeat 전송
+  const heartbeat = setInterval(() => {
+    if (aborted) { clearInterval(heartbeat); return; }
+    try { res.write(': heartbeat\n\n'); } catch { aborted = true; clearInterval(heartbeat); }
+  }, 15000);
 
   try {
     const genAI = new GoogleGenAI({ apiKey });
@@ -234,39 +244,54 @@ app.post('/api/generate', async (req, res) => {
       ? USAGE_SHOTS.filter((s) => selectedShots.includes(s.id))
       : USAGE_SHOTS;
 
-    send({ type: 'status', message: `${shots.length}개 활용컷 생성 시작...` });
+    const total = filenames.length * shots.length;
+    send({ type: 'status', message: `${filenames.length}명 × ${shots.length}개 = 총 ${total}장 생성 시작...` });
 
-    for (const shot of shots) {
-      if (aborted) break;  // 연결 끊기면 즉시 중단
+    // 인물별로 순서대로 실행
+    for (let pi = 0; pi < filenames.length; pi++) {
+      if (aborted) break;
 
-      send({ type: 'progress', shotId: shot.id, name: shot.name, emoji: shot.emoji });
+      const filename = filenames[pi];
+      const imagePath = path.join(uploadsDir, filename);
 
-      try {
-        const outputFilename = `${Date.now()}-${shot.id}.png`;
-        const outputPath = path.join(generatedDir, outputFilename);
+      send({ type: 'person_start', filename, personIndex: pi, totalPersons: filenames.length });
 
-        await generateShot(genAI, imagePath, shot, outputPath);
+      for (const shot of shots) {
+        if (aborted) break;
 
-        if (aborted) break;  // 생성 완료됐지만 이미 연결 끊김 → 루프 종료
+        send({ type: 'progress', filename, shotId: shot.id, name: shot.name, emoji: shot.emoji });
 
-        send({
-          type: 'done',
-          shotId: shot.id,
-          name: shot.name,
-          emoji: shot.emoji,
-          url: `/generated/${outputFilename}`,
-          filename: outputFilename,
-        });
-      } catch (err) {
-        send({ type: 'error', shotId: shot.id, name: shot.name, emoji: shot.emoji, message: err.message });
+        try {
+          const outputFilename = `${Date.now()}-${shot.id}.png`;
+          const outputPath = path.join(generatedDir, outputFilename);
+
+          await generateShot(genAI, imagePath, shot, outputPath);
+
+          if (aborted) break;
+
+          send({
+            type: 'done',
+            filename,
+            shotId: shot.id,
+            name: shot.name,
+            emoji: shot.emoji,
+            url: `/generated/${outputFilename}`,
+            outputFilename,
+          });
+        } catch (err) {
+          send({ type: 'error', filename, shotId: shot.id, name: shot.name, emoji: shot.emoji, message: err.message });
+        }
       }
+
+      send({ type: 'person_done', filename, personIndex: pi });
     }
 
     send({ type: 'complete' });
   } catch (err) {
     send({ type: 'fatal', message: err.message });
   } finally {
-    res.end();
+    clearInterval(heartbeat);
+    try { res.end(); } catch {}
   }
 });
 

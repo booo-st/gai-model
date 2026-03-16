@@ -71,70 +71,78 @@
     .upload-area {
       border: 2px dashed #2e2e46;
       border-radius: 16px;
-      padding: 32px 20px;
+      padding: 24px 20px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
       background: #13131f;
       position: relative;
-      min-height: 140px;
+      min-height: 110px;
+      display: flex; align-items: center; justify-content: center;
     }
     .upload-area:hover, .upload-area.drag-over {
       border-color: #7c6af7;
       background: #16162a;
     }
-    .upload-icon { font-size: 2.5rem; margin-bottom: 10px; }
-    .upload-text { color: #7070a0; font-size: 0.9rem; line-height: 1.5; }
-    .upload-text strong { color: #a0a0d0; display: block; margin-bottom: 4px; }
-
-    /* 미리보기 (이미지 있을 때) */
-    #uploadPreview {
-      display: none;
-      position: relative;
-    }
-    #uploadPreview img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 12px;
-      display: block;
-    }
-    .upload-area.has-image {
-      padding: 0;
-      overflow: hidden;
-      cursor: default;
-      border-style: solid;
-      border-color: #3a3a5a;
-    }
-    .upload-area.has-image:hover { border-color: #5a5a8a; background: #13131f; }
-
-    /* 오버레이 버튼들 */
-    .preview-actions {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      border-radius: 12px;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    #uploadPreview:hover .preview-actions { display: flex; }
-    .preview-btn {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 7px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      backdrop-filter: blur(4px);
-      transition: background 0.15s;
-    }
-    .preview-btn:hover { background: rgba(255,255,255,0.28); }
-    .preview-btn.danger:hover { background: rgba(239,68,68,0.6); }
+    .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+    .upload-text { color: #7070a0; font-size: 0.85rem; line-height: 1.5; }
+    .upload-text strong { color: #a0a0d0; display: block; margin-bottom: 2px; }
+    .upload-inner { pointer-events: none; }
 
     #fileInput { display: none; }
+
+    /* ─── Model List ─── */
+    .model-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .model-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #13131f;
+      border: 1px solid #1e1e2e;
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .model-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .model-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .model-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #c0c0e0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .model-order {
+      font-size: 0.72rem;
+      color: #5050a0;
+      margin-top: 1px;
+    }
+    .model-remove {
+      background: none;
+      border: none;
+      color: #5050a0;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .model-remove:hover { color: #f87171; background: rgba(248,113,113,0.1); }
 
     /* Shot Selector */
     .shot-list { display: flex; flex-direction: column; gap: 8px; }
@@ -234,10 +242,64 @@
     .download-all-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .clear-history-btn:hover { border-color: #f87171; color: #f87171; }
 
+    /* ─── Person Section ─── */
+    .person-section {
+      margin-bottom: 28px;
+    }
+    .person-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1e1e2e;
+    }
+    .person-thumb {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid #2e2e42;
+    }
+    .person-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #7070a0;
+    }
+    .person-filename {
+      font-size: 0.78rem;
+      color: #4a4a6a;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+    .person-dl-btn {
+      margin-left: auto;
+      background: #1e1e2e;
+      border: 1px solid #2e2e42;
+      color: #7070a0;
+      padding: 5px 11px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .person-dl-btn:hover { background: #2a2a3e; color: #e8e8f0; }
+    .person-dl-btn:disabled { opacity: 0.3; cursor: default; }
+    .person-badge {
+      font-size: 0.72rem;
+      color: #5050a0;
+      background: #1a1a2e;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
     .results-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
     }
 
     /* Result Card */
@@ -285,22 +347,22 @@
     }
 
     .card-info {
-      padding: 12px 14px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .card-name { font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    .card-actions { display: flex; gap: 6px; }
+    .card-name { font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .card-actions { display: flex; gap: 5px; }
     .icon-btn {
       background: #1e1e2e;
       border: 1px solid #2e2e42;
       color: #a0a0c0;
-      width: 32px; height: 32px;
-      border-radius: 8px;
+      width: 30px; height: 30px;
+      border-radius: 7px;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       transition: all 0.15s;
     }
     .icon-btn:hover { background: #2a2a3e; color: #e8e8f0; }
@@ -308,7 +370,6 @@
 
     /* Empty state */
     .empty-state {
-      grid-column: 1/-1;
       text-align: center;
       padding: 80px 20px;
       color: #3a3a5a;
@@ -382,25 +443,19 @@
     <!-- 1. 이미지 업로드 -->
     <div>
       <div class="section-label">1. 인물 사진 업로드</div>
-      <div class="upload-area" id="uploadArea" onclick="onUploadAreaClick()">
-        <!-- 플레이스홀더 -->
-        <div id="uploadPlaceholder">
+      <div class="upload-area" id="uploadArea" onclick="triggerUpload()">
+        <div class="upload-inner">
           <div class="upload-icon">🖼️</div>
           <div class="upload-text">
             <strong>클릭하거나 파일을 드래그</strong>
-            JPG, PNG, WEBP · 최대 20MB
-          </div>
-        </div>
-        <!-- 미리보기 -->
-        <div id="uploadPreview">
-          <img id="previewImg" alt="업로드된 이미지" />
-          <div class="preview-actions">
-            <button class="preview-btn" onclick="triggerUpload(event)">🔄 변경</button>
-            <button class="preview-btn danger" onclick="clearUpload(event)">✕ 삭제</button>
+            여러 장 동시 업로드 가능 · JPG, PNG, WEBP
           </div>
         </div>
       </div>
-      <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)" />
+      <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFileSelect(event)" />
+
+      <!-- 업로드된 모델 목록 -->
+      <div class="model-list" id="modelList"></div>
     </div>
 
     <!-- 2. 활용컷 선택 -->
@@ -437,9 +492,9 @@
       </div>
     </div>
 
-    <!-- Results Grid -->
-    <div class="results-grid" id="resultsGrid">
-      <div class="empty-state">
+    <!-- Results Area -->
+    <div id="resultsArea">
+      <div class="empty-state" id="emptyState">
         <div class="empty-icon">🎭</div>
         <p>인물 사진을 업로드하고<br>활용컷을 선택한 뒤 생성하면<br>여기에 결과가 나타납니다.</p>
       </div>
@@ -453,7 +508,7 @@
   <div class="modal">
     <h2>🔑 Gemini API 키 설정</h2>
     <p>
-      nano-banana MCP가 사용하는 Gemini API 키를 입력해주세요.<br>
+      Gemini API 키를 입력해주세요.<br>
       <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>에서 무료로 발급받을 수 있어요.
       키는 브라우저에만 저장되고 외부로 전송되지 않습니다.
     </p>
@@ -467,12 +522,12 @@
 
 <script>
   // ─── State ───
-  let uploadedFilename = null;
+  let uploadedModels = [];   // [{ filename, url, originalName }]
   let selectedShots = new Set();
-  let generatedImages = [];   // 현재 세션
+  let generatedImages = [];
   let isGenerating = false;
   const SHOT_DEFS = [];
-  const HISTORY_KEY = 'gai_history';
+  const HISTORY_KEY = 'gai_history_v2';
 
   // ─── Init ───
   async function init() {
@@ -546,30 +601,14 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeApiModal(); });
 
   // ─── Upload ───
-  function onUploadAreaClick() {
-    if (!uploadedFilename) triggerUpload();
-  }
-
   function triggerUpload(e) {
     if (e) e.stopPropagation();
     document.getElementById('fileInput').click();
   }
 
-  function clearUpload(e) {
-    if (e) e.stopPropagation();
-    uploadedFilename = null;
-    document.getElementById('previewImg').src = '';
-    document.getElementById('uploadPreview').style.display = 'none';
-    document.getElementById('uploadPlaceholder').style.display = '';
-    const area = document.getElementById('uploadArea');
-    area.classList.remove('has-image');
-    updateGenerateBtn();
-  }
-
   function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (file) uploadFile(file);
-    // input 초기화 (같은 파일 재선택 허용)
+    const files = Array.from(e.target.files);
+    files.forEach(f => uploadFile(f));
     e.target.value = '';
   }
 
@@ -585,45 +624,72 @@
     area.addEventListener('drop', e => {
       e.preventDefault();
       area.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) uploadFile(file);
+      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+      files.forEach(f => uploadFile(f));
     });
   }
 
   async function uploadFile(file) {
-    const placeholder = document.getElementById('uploadPlaceholder');
-    placeholder.innerHTML = '<div class="upload-icon">⏳</div><div class="upload-text">업로드 중...</div>';
-
     const formData = new FormData();
     formData.append('image', file);
+
+    // 임시 항목 추가 (업로드 중 표시)
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    const tempItem = document.createElement('div');
+    tempItem.className = 'model-item';
+    tempItem.id = tempId;
+    tempItem.innerHTML = `
+      <div style="width:44px;height:44px;border-radius:8px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">⏳</div>
+      <div class="model-info">
+        <div class="model-name">${file.name}</div>
+        <div class="model-order">업로드 중...</div>
+      </div>
+    `;
+    document.getElementById('modelList').appendChild(tempItem);
 
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
 
       if (data.filename) {
-        uploadedFilename = data.filename;
-        document.getElementById('previewImg').src = data.url;
-        document.getElementById('uploadPreview').style.display = 'block';
-        placeholder.style.display = 'none';
-        document.getElementById('uploadArea').classList.add('has-image');
+        uploadedModels.push({ filename: data.filename, url: data.url, originalName: file.name });
+        tempItem.remove();
+        renderModelList();
         updateGenerateBtn();
       }
-    } catch (err) {
-      placeholder.innerHTML = '<div class="upload-icon">❌</div><div class="upload-text">업로드 실패. 다시 시도해주세요.</div>';
+    } catch {
+      tempItem.remove();
     }
+  }
+
+  function renderModelList() {
+    const list = document.getElementById('modelList');
+    list.innerHTML = uploadedModels.map((m, i) => `
+      <div class="model-item">
+        <img class="model-thumb" src="${m.url}" alt="${m.originalName}" />
+        <div class="model-info">
+          <div class="model-name">${m.originalName}</div>
+          <div class="model-order">모델 ${i + 1}</div>
+        </div>
+        <button class="model-remove" onclick="removeModel('${m.filename}')" title="제거">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function removeModel(filename) {
+    uploadedModels = uploadedModels.filter(m => m.filename !== filename);
+    renderModelList();
+    updateGenerateBtn();
   }
 
   // ─── History ───
   function saveToHistory(imgData) {
     const history = getHistory();
-    // 동일 파일명이면 덮어쓰기
-    const idx = history.findIndex(h => h.filename === imgData.filename);
+    const idx = history.findIndex(h => h.filename === imgData.filename && h.shotId === imgData.shotId);
     const entry = { ...imgData, savedAt: new Date().toISOString() };
     if (idx >= 0) history[idx] = entry;
     else history.unshift(entry);
-    // 최대 100개 유지
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 100)));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 200)));
     document.getElementById('clearHistoryBtn').style.display = '';
   }
 
@@ -635,24 +701,73 @@
     const history = getHistory();
     if (history.length === 0) return;
 
-    const grid = document.getElementById('resultsGrid');
-    grid.innerHTML = '';
     document.getElementById('clearHistoryBtn').style.display = '';
 
+    // 파일명 기준으로 그루핑
+    const groups = {};
+    const order = [];
     history.forEach(item => {
-      const card = createHistoryCard(item);
-      grid.appendChild(card);
+      if (!groups[item.filename]) {
+        groups[item.filename] = [];
+        order.push(item.filename);
+      }
+      groups[item.filename].push(item);
     });
+
+    const area = document.getElementById('resultsArea');
+    const emptyState = area.querySelector('#emptyState');
+    if (emptyState) emptyState.remove();
+
+    order.forEach(filename => {
+      const items = groups[filename];
+      const section = getOrCreatePersonSection(filename, items[0].originalName || filename, null, true);
+      const grid = section.querySelector('.results-grid');
+      items.forEach(item => {
+        const card = createHistoryCard(item);
+        grid.appendChild(card);
+      });
+    });
+
     updateResultCount();
+  }
+
+  function getOrCreatePersonSection(filename, label, thumbUrl, isHistory) {
+    const sectionId = `person-section-${CSS.escape(filename)}`;
+    let section = document.getElementById(sectionId);
+    if (section) return section;
+
+    section = document.createElement('div');
+    section.className = 'person-section';
+    section.id = sectionId;
+
+    const thumbHtml = thumbUrl
+      ? `<img class="person-thumb" src="${thumbUrl}" alt="${label}" />`
+      : `<div style="width:36px;height:36px;border-radius:8px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🗂</div>`;
+
+    section.innerHTML = `
+      <div class="person-header">
+        ${thumbHtml}
+        <div>
+          <div class="person-label">${label}</div>
+          <div class="person-filename">${filename}</div>
+        </div>
+        <div class="person-badge" id="badge-${CSS.escape(filename)}">0개</div>
+        <button class="person-dl-btn" id="person-dl-${CSS.escape(filename)}" onclick="downloadPerson('${filename}')" disabled>⬇ 전체 다운로드</button>
+      </div>
+      <div class="results-grid" id="grid-${CSS.escape(filename)}"></div>
+    `;
+
+    document.getElementById('resultsArea').appendChild(section);
+    return section;
   }
 
   function createHistoryCard(item) {
     const card = document.createElement('div');
     card.className = 'result-card is-history';
-    card.id = `card-${item.shotId}-${item.filename}`;
+    card.id = `card-${CSS.escape(item.filename)}-${item.shotId}`;
     const date = new Date(item.savedAt).toLocaleDateString('ko-KR', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
     card.innerHTML = `
-      <div class="card-image" id="cardImg-hist-${item.filename}">
+      <div class="card-image">
         <img src="${item.url}" alt="${item.name}" loading="lazy"
              onclick="openImage('${item.url}')" style="cursor:zoom-in"
              onerror="this.closest('.card-image').innerHTML='<div class=\\'err-icon\\'>🗂</div><div class=\\'err-msg\\'>파일 없음</div>'; this.closest('.card-image').className='card-image error-state';" />
@@ -661,9 +776,9 @@
       <div class="card-info">
         <div class="card-name">${item.emoji} ${item.name}</div>
         <div class="card-actions">
-          <button class="icon-btn" onclick="regenShot('${item.shotId}')" title="다시 생성">🔄</button>
-          <button class="icon-btn" onclick="downloadImage('${item.url}','${item.filename}')" title="다운로드">⬇</button>
-          <button class="icon-btn" onclick="deleteHistoryCard('${item.filename}')" title="삭제">🗑</button>
+          <button class="icon-btn" onclick="regenShot('${item.filename}','${item.shotId}')" title="다시 생성">🔄</button>
+          <button class="icon-btn" onclick="downloadImage('${item.url}','${item.outputFilename || item.filename}')" title="다운로드">⬇</button>
+          <button class="icon-btn" onclick="deleteCard('${CSS.escape(item.filename)}','${item.shotId}','${item.outputFilename || ''}')" title="삭제">🗑</button>
         </div>
       </div>
     `;
@@ -680,49 +795,60 @@
     localStorage.removeItem(HISTORY_KEY);
     generatedImages = [];
 
-    // 로딩 중인 카드를 제외하고 모두 제거
     document.querySelectorAll('.result-card').forEach(card => {
       if (!card.querySelector('.card-image.loading')) card.remove();
+    });
+
+    // 빈 섹션 제거
+    document.querySelectorAll('.person-section').forEach(sec => {
+      if (!sec.querySelector('.result-card')) sec.remove();
     });
 
     document.getElementById('clearHistoryBtn').style.display = 'none';
 
     if (!document.querySelector('.result-card')) {
-      document.getElementById('resultsGrid').innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🎭</div>
-          <p>인물 사진을 업로드하고<br>활용컷을 선택한 뒤 생성하면<br>여기에 결과가 나타납니다.</p>
-        </div>`;
+      const area = document.getElementById('resultsArea');
+      if (!area.querySelector('#emptyState')) {
+        area.innerHTML = `
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🎭</div>
+            <p>인물 사진을 업로드하고<br>활용컷을 선택한 뒤 생성하면<br>여기에 결과가 나타납니다.</p>
+          </div>`;
+      }
     }
     updateResultCount();
   }
 
-  function deleteHistoryCard(filename) {
-    if (!confirm('이 항목을 히스토리에서 삭제할까요?')) return;
-    // localStorage에서 제거
-    const history = getHistory().filter(h => h.filename !== filename);
+  function deleteCard(escapedFilename, shotId, outputFilename) {
+    if (!confirm('이 이미지를 삭제할까요?')) return;
+    if (outputFilename) fetch(`/api/generated/${outputFilename}`, { method: 'DELETE' }).catch(() => {});
+    const card = document.getElementById(`card-${escapedFilename}-${shotId}`);
+    if (card) card.remove();
+    // 히스토리에서도 제거
+    const history = getHistory().filter(h => !(CSS.escape(h.filename) === escapedFilename && h.shotId === shotId));
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-    // 카드 제거
-    document.querySelectorAll('.result-card').forEach(c => {
-      if (c.id.includes(filename)) c.remove();
-    });
-    generatedImages = generatedImages.filter(i => i.filename !== filename);
-    if (history.length === 0) document.getElementById('clearHistoryBtn').style.display = 'none';
+    generatedImages = generatedImages.filter(i => !(CSS.escape(i.filename) === escapedFilename && i.shotId === shotId));
+    // 섹션이 비면 섹션도 제거
+    const section = document.querySelector(`[id="person-section-${escapedFilename}"]`);
+    if (section && !section.querySelector('.result-card')) section.remove();
     updateResultCount();
   }
 
   // ─── Generate ───
   function updateGenerateBtn() {
     const btn = document.getElementById('generateBtn');
-    const hasImage = !!uploadedFilename;
+    const hasImages = uploadedModels.length > 0;
     const hasShots = selectedShots.size > 0;
     const hasKey = !!localStorage.getItem('gemini_api_key');
-    btn.disabled = !hasImage || !hasShots || !hasKey || isGenerating;
+    btn.disabled = !hasImages || !hasShots || !hasKey || isGenerating;
 
     if (!hasKey) btn.innerHTML = '<span>⚠️</span> API 키를 먼저 설정해주세요';
-    else if (!hasImage) btn.innerHTML = '<span>🖼️</span> 사진을 먼저 업로드해주세요';
+    else if (!hasImages) btn.innerHTML = '<span>🖼️</span> 사진을 먼저 업로드해주세요';
     else if (!hasShots) btn.innerHTML = '<span>☑️</span> 활용컷을 하나 이상 선택해주세요';
-    else btn.innerHTML = `<span>✨</span> 활용컷 생성하기 (${selectedShots.size}개)`;
+    else {
+      const total = uploadedModels.length * selectedShots.size;
+      btn.innerHTML = `<span>✨</span> 활용컷 생성하기 (${uploadedModels.length}명 × ${selectedShots.size}개 = ${total}장)`;
+    }
   }
 
   async function startGenerate() {
@@ -731,32 +857,45 @@
     updateGenerateBtn();
 
     const apiKey = localStorage.getItem('gemini_api_key');
-    const grid = document.getElementById('resultsGrid');
     const statusBar = document.getElementById('statusBar');
     const statusText = document.getElementById('statusText');
 
-    // 새 카드 플레이스홀더를 그리드 맨 앞에 삽입
-    const emptyState = grid.querySelector('.empty-state');
+    const emptyState = document.getElementById('emptyState');
     if (emptyState) emptyState.remove();
 
-    const placeholders = [];
-    selectedShots.forEach(id => {
-      const shot = SHOT_DEFS.find(s => s.id === id);
-      if (shot) {
-        const card = createLoadingCard(shot);
-        grid.insertBefore(card, grid.firstChild);
-        placeholders.push(shot);
-      }
-    });
-
     statusBar.classList.add('visible');
-    statusText.textContent = `${placeholders.length}개 활용컷 생성 시작...`;
+    statusText.textContent = '생성 시작...';
+
+    // 각 모델별 섹션 및 로딩 카드 생성
+    uploadedModels.forEach(model => {
+      const section = getOrCreatePersonSection(model.filename, model.originalName, model.url, false);
+      const grid = section.querySelector('.results-grid');
+      [...selectedShots].forEach(shotId => {
+        const shot = SHOT_DEFS.find(s => s.id === shotId);
+        if (!shot) return;
+        const cardId = `card-${CSS.escape(model.filename)}-${shotId}`;
+        let card = document.getElementById(cardId);
+        if (card) {
+          // 기존 카드 초기화
+          const imgDiv = card.querySelector('.card-image');
+          if (imgDiv) { imgDiv.className = 'card-image loading'; imgDiv.innerHTML = ''; }
+          card.querySelectorAll('.icon-btn').forEach(b => b.disabled = true);
+        } else {
+          card = createLoadingCard(model.filename, shot);
+          grid.appendChild(card);
+        }
+      });
+    });
 
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: uploadedFilename, apiKey, selectedShots: [...selectedShots] }),
+        body: JSON.stringify({
+          filenames: uploadedModels.map(m => m.filename),
+          apiKey,
+          selectedShots: [...selectedShots],
+        }),
       });
 
       const reader = res.body.getReader();
@@ -787,25 +926,30 @@
 
   function handleEvent(event, statusText) {
     switch (event.type) {
-      case 'status':
-        statusText.textContent = event.message;
+      case 'person_start':
+        statusText.textContent = `👤 ${event.filename} 처리 중... (${event.personIndex + 1}/${event.totalPersons})`;
+        break;
+      case 'person_done':
+        statusText.textContent = `✅ ${event.filename} 완료!`;
+        updatePersonBadge(event.filename);
         break;
       case 'progress':
-        statusText.textContent = `${event.emoji} ${event.name} 생성 중...`;
-        updateCard(event.shotId, 'loading');
+        statusText.textContent = `${event.emoji} ${event.name} 생성 중... (${event.filename})`;
         break;
-      case 'done':
+      case 'done': {
         statusText.textContent = `${event.emoji} ${event.name} 완료!`;
         generatedImages.push(event);
-        updateCard(event.shotId, 'done', event.url, event.filename);
-        saveToHistory(event);
+        updateCard(event.filename, event.shotId, 'done', event.url, event.outputFilename);
+        saveToHistory({ ...event, originalName: getOriginalName(event.filename) });
         document.getElementById('downloadAllBtn').disabled = false;
+        updatePersonBadge(event.filename);
         break;
+      }
       case 'error':
-        updateCard(event.shotId, 'error', null, null, event.message);
+        updateCard(event.filename, event.shotId, 'error', null, null, event.message);
         break;
       case 'complete':
-        statusText.textContent = `✅ 완료! ${generatedImages.length}개 생성됨`;
+        statusText.textContent = `✅ 완료! 총 ${generatedImages.length}개 생성됨`;
         break;
       case 'fatal':
         statusText.textContent = `❌ 오류: ${event.message}`;
@@ -813,16 +957,32 @@
     }
   }
 
-  function createLoadingCard(shot) {
+  function getOriginalName(filename) {
+    const model = uploadedModels.find(m => m.filename === filename);
+    return model ? model.originalName : filename;
+  }
+
+  function updatePersonBadge(filename) {
+    const ef = CSS.escape(filename);
+    const section = document.getElementById(`person-section-${ef}`);
+    if (!section) return;
+    const count = section.querySelectorAll('.card-image img').length;
+    const badgeEl = document.getElementById(`badge-${ef}`);
+    if (badgeEl) badgeEl.textContent = `${count}개`;
+    const dlBtn = document.getElementById(`person-dl-${ef}`);
+    if (dlBtn) dlBtn.disabled = count === 0;
+  }
+
+  function createLoadingCard(filename, shot) {
     const card = document.createElement('div');
     card.className = 'result-card';
-    card.id = `card-${shot.id}`;
+    card.id = `card-${CSS.escape(filename)}-${shot.id}`;
     card.innerHTML = `
-      <div class="card-image loading" id="cardImg-${shot.id}"></div>
+      <div class="card-image loading" id="cardImg-${CSS.escape(filename)}-${shot.id}"></div>
       <div class="card-info">
         <div class="card-name">${shot.emoji} ${shot.name}</div>
         <div class="card-actions">
-          <button class="icon-btn" id="regenBtn-${shot.id}" disabled title="다시 생성">🔄</button>
+          <button class="icon-btn" disabled title="다시 생성">🔄</button>
           <button class="icon-btn" disabled title="다운로드">⬇</button>
           <button class="icon-btn" disabled title="삭제">🗑</button>
         </div>
@@ -831,9 +991,10 @@
     return card;
   }
 
-  function updateCard(shotId, state, url, filename, errMsg) {
-    const imgDiv = document.getElementById(`cardImg-${shotId}`);
-    const card = document.getElementById(`card-${shotId}`);
+  function updateCard(filename, shotId, state, url, outputFilename, errMsg) {
+    const ef = CSS.escape(filename);
+    const imgDiv = document.getElementById(`cardImg-${ef}-${shotId}`);
+    const card = document.getElementById(`card-${ef}-${shotId}`);
     if (!imgDiv || !card) return;
 
     const [regenBtn, dlBtn, delBtn] = card.querySelectorAll('.icon-btn');
@@ -845,39 +1006,47 @@
     } else if (state === 'done') {
       imgDiv.className = 'card-image';
       imgDiv.innerHTML = `<img src="${url}" alt="생성된 이미지" loading="lazy" onclick="openImage('${url}')" style="cursor:zoom-in" />`;
-      regenBtn.disabled = false; regenBtn.onclick = () => regenShot(shotId);
-      dlBtn.disabled = false;    dlBtn.onclick = () => downloadImage(url, filename);
-      delBtn.disabled = false;   delBtn.onclick = () => deleteSessionCard(shotId, filename);
+      regenBtn.disabled = false; regenBtn.onclick = () => regenShot(filename, shotId);
+      dlBtn.disabled = false;    dlBtn.onclick = () => downloadImage(url, outputFilename);
+      delBtn.disabled = false;   delBtn.onclick = () => deleteCard(ef, shotId, outputFilename);
     } else if (state === 'error') {
       imgDiv.className = 'card-image error-state';
       imgDiv.innerHTML = `<div class="err-icon">⚠️</div><div class="err-msg">${errMsg || '생성 실패'}</div>`;
-      regenBtn.disabled = false; regenBtn.onclick = () => regenShot(shotId);
+      regenBtn.disabled = false; regenBtn.onclick = () => regenShot(filename, shotId);
       dlBtn.disabled = true;
       delBtn.disabled = false;   delBtn.onclick = () => { card.remove(); updateResultCount(); };
     }
   }
 
   // ─── 개별 재생성 ───
-  async function regenShot(shotId) {
-    if (!uploadedFilename) return alert('업로드된 이미지가 없습니다.');
+  async function regenShot(filename, shotId) {
     const apiKey = localStorage.getItem('gemini_api_key');
     if (!apiKey) return alert('API 키를 먼저 설정해주세요.');
 
     const shot = SHOT_DEFS.find(s => s.id === shotId);
     if (!shot) return;
 
-    // 기존 세션 카드가 없으면 새로 만들어 맨 앞에 삽입
-    let card = document.getElementById(`card-${shotId}`);
+    const model = uploadedModels.find(m => m.filename === filename);
+    const originalName = model ? model.originalName : filename;
+
+    // 섹션이 없으면 생성
+    let section = document.getElementById(`person-section-${CSS.escape(filename)}`);
+    if (!section) {
+      section = getOrCreatePersonSection(filename, originalName, model?.url || null, false);
+    }
+
+    const grid = section.querySelector('.results-grid');
+    let card = document.getElementById(`card-${CSS.escape(filename)}-${shotId}`);
     if (!card) {
-      card = createLoadingCard(shot);
-      const grid = document.getElementById('resultsGrid');
-      const emptyState = grid.querySelector('.empty-state');
-      if (emptyState) emptyState.remove();
+      card = createLoadingCard(filename, shot);
       grid.insertBefore(card, grid.firstChild);
     }
 
-    generatedImages = generatedImages.filter(i => i.shotId !== shotId);
-    updateCard(shotId, 'loading');
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState) emptyState.remove();
+
+    generatedImages = generatedImages.filter(i => !(i.filename === filename && i.shotId === shotId));
+    updateCard(filename, shotId, 'loading');
 
     const statusBar = document.getElementById('statusBar');
     const statusText = document.getElementById('statusText');
@@ -888,7 +1057,7 @@
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: uploadedFilename, apiKey, selectedShots: [shotId] }),
+        body: JSON.stringify({ filenames: [filename], apiKey, selectedShots: [shotId] }),
       });
 
       const reader = res.body.getReader();
@@ -909,7 +1078,7 @@
       }
     } catch (err) {
       statusText.textContent = `❌ 오류: ${err.message}`;
-      updateCard(shotId, 'error', null, null, err.message);
+      updateCard(filename, shotId, 'error', null, null, err.message);
     } finally {
       setTimeout(() => statusBar.classList.remove('visible'), 3000);
       updateResultCount();
@@ -924,6 +1093,17 @@
     a.click();
   }
 
+  async function downloadPerson(filename) {
+    const section = document.getElementById(`person-section-${CSS.escape(filename)}`);
+    if (!section) return;
+    const imgs = [...section.querySelectorAll('.card-image img')];
+    for (const img of imgs) {
+      const src = img.getAttribute('src');
+      downloadImage(src, src.split('/').pop());
+      await new Promise(r => setTimeout(r, 300));
+    }
+  }
+
   async function downloadAll() {
     const allImages = [...document.querySelectorAll('.card-image img')];
     for (const img of allImages) {
@@ -934,26 +1114,23 @@
     }
   }
 
-  function deleteSessionCard(shotId, filename) {
-    if (!confirm('이 이미지를 삭제할까요?')) return;
-    fetch(`/api/generated/${filename}`, { method: 'DELETE' }).catch(() => {});
-    const card = document.getElementById(`card-${shotId}`);
-    if (card) card.remove();
-    generatedImages = generatedImages.filter(i => i.filename !== filename);
-    // 히스토리에서도 제거
-    const history = getHistory().filter(h => h.filename !== filename);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-    updateResultCount();
-  }
-
   function openImage(url) { window.open(url, '_blank'); }
 
   function updateResultCount() {
     const cards = document.querySelectorAll('.result-card').length;
     document.getElementById('resultCount').textContent = cards > 0 ? `(${cards})` : '';
-    if (generatedImages.length > 0 || document.querySelectorAll('.card-image img').length > 0) {
+    if (document.querySelectorAll('.card-image img').length > 0) {
       document.getElementById('downloadAllBtn').disabled = false;
     }
+    // 모든 person-section의 배지 갱신
+    document.querySelectorAll('.person-section').forEach(sec => {
+      const ef = sec.id.replace('person-section-', '');
+      const count = sec.querySelectorAll('.card-image img').length;
+      const badgeEl = sec.querySelector(`#badge-${ef}`);
+      if (badgeEl) badgeEl.textContent = `${count}개`;
+      const dlBtn = sec.querySelector(`#person-dl-${ef}`);
+      if (dlBtn) dlBtn.disabled = count === 0;
+    });
   }
 
   // ─── Start ───
