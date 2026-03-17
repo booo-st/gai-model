@@ -541,7 +541,8 @@
   async function loadShots() {
     const res = await fetch('/api/shots');
     const shots = await res.json();
-    shots.forEach(s => { SHOT_DEFS.push(s); selectedShots.add(s.id); });
+    const DEFAULT_OFF = new Set(['business', 'formal']);
+    shots.forEach(s => { SHOT_DEFS.push(s); if (!DEFAULT_OFF.has(s.id)) selectedShots.add(s.id); });
     renderShotList();
   }
 
@@ -794,6 +795,13 @@
 
     localStorage.removeItem(HISTORY_KEY);
     generatedImages = [];
+
+    // 왼쪽 업로드 목록 초기화
+    if (!document.querySelector('.card-image.loading')) {
+      uploadedModels = [];
+      renderModelList();
+      updateGenerateBtn();
+    }
 
     document.querySelectorAll('.result-card').forEach(card => {
       if (!card.querySelector('.card-image.loading')) card.remove();

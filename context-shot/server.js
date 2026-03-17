@@ -24,7 +24,8 @@ app.use('/uploads', express.static(uploadsDir));
 const storage = multer.diskStorage({
   destination: uploadsDir,
   filename: (req, file, cb) => {
-    cb(null, `upload-${Date.now()}${path.extname(file.originalname)}`);
+    const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    cb(null, `upload-${unique}${path.extname(file.originalname)}`);
   },
 });
 const upload = multer({
@@ -262,7 +263,7 @@ app.post('/api/generate', async (req, res) => {
         send({ type: 'progress', filename, shotId: shot.id, name: shot.name, emoji: shot.emoji });
 
         try {
-          const outputFilename = `${Date.now()}-${shot.id}.png`;
+          const outputFilename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${shot.id}.png`;
           const outputPath = path.join(generatedDir, outputFilename);
 
           await generateShot(genAI, imagePath, shot, outputPath);
